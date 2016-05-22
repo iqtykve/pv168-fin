@@ -30,7 +30,7 @@ public class Main {
 
     public static void main(String[] args) throws AccountException {
 
-        log.info("zaciname");
+        log.info("zaciname :) ");
 
         DataSource dataSource = createMemoryDatabase();
         AccountManager accManager = new AccountManagerImpl(dataSource);
