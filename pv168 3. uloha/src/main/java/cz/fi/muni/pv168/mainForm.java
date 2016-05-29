@@ -15,18 +15,25 @@ import javax.sql.DataSource;
  */
 public class mainForm extends javax.swing.JFrame {
     private AccountManager accManager;
+    private PaymentManager payManager;
+    private DataSource dataSource;
     /**
      * Creates new form mainForm
      */
     public mainForm() {
+        
         initComponents();
-        
-        DataSource dataSource = createMemoryDatabase();
-        
+        dataSource = createMemoryDatabase();
         accManager = new AccountManagerImpl(dataSource);
-
+        payManager = new PaymentManagerImpl(dataSource);
     }
-
+    
+    
+     public mainForm(AccountManager accManager, PaymentManager payManager) {
+        initComponents();
+        this.accManager = accManager;
+        this.payManager = payManager;
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -45,7 +52,7 @@ public class mainForm extends javax.swing.JFrame {
 
         jLabel1.setText("Main page");
 
-        findTextbox.setText("Jarda");
+        findTextbox.setText("Valenta");
         findTextbox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 findTextboxActionPerformed(evt);
@@ -113,7 +120,7 @@ public class mainForm extends javax.swing.JFrame {
 
     private void jButton2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton2MouseClicked
         this.setVisible(false);
-        CreateUser Cu = new CreateUser();
+        CreateUser Cu = new CreateUser(accManager,payManager);
         Cu.setVisible(true);
     }//GEN-LAST:event_jButton2MouseClicked
 
@@ -121,14 +128,14 @@ public class mainForm extends javax.swing.JFrame {
     vyhledani uzivatelu podle jmena, zavreni aktualniho formu a zavolani formu ChooseUserForm
     */
     private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
-        List<Account> result = accManager.findAccountByName(findTextbox.getText());
         this.setVisible(false);
-        ChooseUserForm Cuf = new ChooseUserForm();
-        Cuf.writeUsers(result);       
-        Cuf.setVisible(true);
-        
+        List<Account> list = search(findTextbox.getText());
+        ChooseUserForm Cuf = new ChooseUserForm(list,accManager,payManager);
     }//GEN-LAST:event_jButton1MouseClicked
-
+    public List<Account> search(String name){
+        List<Account> result = accManager.findAccountByName(name);
+        return result;
+    }
     /**
      * @param args the command line arguments
      */

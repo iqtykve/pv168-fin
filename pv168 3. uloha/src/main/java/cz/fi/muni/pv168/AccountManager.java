@@ -20,4 +20,6 @@ public interface AccountManager {
     void deleteAccount(Account account);
     Account findAccount(int id);
     List<Account> findAllAccount();
+    List<Account> findAccountByName(String name);
+    List<Account> findAccountByNameActive(String name);
 }

@@ -265,15 +265,15 @@ public class PaymentManagerImpl implements cz.fi.muni.pv168.PaymentManager {
         return account;
     }
     public List<Payment> findPaymentsByAccount(Account account) {
+        System.out.println(account);
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement st = connection.prepareStatement(
-                        "SELECT id,amount,date,message,sender,reciever,sended, FROM payment" +
-                                " WHERE receiver =  " + account.getId() +
-                                " OR sender = " + account.getId())) {
-
+                         "SELECT payment.id,amount,date,message,sended,reciever,sender FROM payment WHERE sender = ? OR reciever = ?")) {
+            st.setLong(1,account.getId()); 
+            st.setLong(2,account.getId()); 
             ResultSet rs = st.executeQuery();
-
+            
             List<Payment> result = new ArrayList<>();
             while (rs.next()) {
                 result.add(resultSetToPayment(rs));
@@ -282,7 +282,7 @@ public class PaymentManagerImpl implements cz.fi.muni.pv168.PaymentManager {
 
         } catch (SQLException ex) {
             throw new ServiceFailureException(
-                    "Error when retrieving all accounts", ex);
+                    "Error when searching findPaymentsByAccount", ex);
         }
     }
 
@@ -290,9 +290,8 @@ public class PaymentManagerImpl implements cz.fi.muni.pv168.PaymentManager {
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement st = connection.prepareStatement(
-                        "SELECT id,amount,date,message,sender,reciever,sended, FROM payment" +
-                                " WHERE sender = " + account.getId())) {
-
+                       "SELECT payment.id,amount,date,message,sended,reciever,sender FROM payment WHERE sender = ?")) {
+            st.setLong(1,account.getId()); 
             ResultSet rs = st.executeQuery();
 
             List<Payment> result = new ArrayList<>();
@@ -311,9 +310,8 @@ public class PaymentManagerImpl implements cz.fi.muni.pv168.PaymentManager {
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement st = connection.prepareStatement(
-                        "SELECT id,amount,date,message,sender,reciever,sended, FROM payment" +
-                                " WHERE  reciever = " + account.getId())) {
-
+                       "SELECT payment.id,amount,date,message,sended,reciever,sender FROM payment WHERE reciever = ?")) {
+            st.setLong(1,account.getId()); 
             ResultSet rs = st.executeQuery();
 
             List<Payment> result = new ArrayList<>();
@@ -327,7 +325,8 @@ public class PaymentManagerImpl implements cz.fi.muni.pv168.PaymentManager {
                     "Error when retrieving all accounts", ex);
         }
     }
-
+   
+    
     private static Date toSqlDate(LocalDate localDate) {
         return localDate == null ? null : Date.valueOf(localDate);
     }

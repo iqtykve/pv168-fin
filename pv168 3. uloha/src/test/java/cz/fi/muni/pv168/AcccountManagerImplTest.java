@@ -80,7 +80,7 @@ public class AcccountManagerImplTest {
         assertEquals("800/0100",account.getAccountNumber());
         assertEquals(false,account.getWasDeleted());
     }
-
+    
     @Test
     public void createAccountWithBad() throws AccountException{
         Account account0 = newAccount(" ","Vizl", new BigDecimal("0"), "800/0100",false);
@@ -133,6 +133,19 @@ public class AcccountManagerImplTest {
         manager.createAccount(account2);
         Account ac = manager.findAccount(1);
         System.out.println(ac);
+    }
+    @Test
+    public void findAccountByName(){
+        Account account1 = newAccount("Franta","Vizl", new BigDecimal("0"), "800/0100",false);
+        Account account2 = newAccount("Franta","Vizl", new BigDecimal("0"), "800/0100",false);
+        Account account3 = newAccount("Jarda","Vizl", new BigDecimal("0"), "800/0100",false);
+        
+        manager.createAccount(account1);
+        manager.createAccount(account2);
+        manager.createAccount(account3);
+        List<Account> result = manager.findAccountByName("Franta");
+        assertEquals(true,result.contains(account1));
+        assertEquals(true,result.contains(account2));
     }
     
     @Test

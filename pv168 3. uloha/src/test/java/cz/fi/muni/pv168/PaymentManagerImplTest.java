@@ -186,7 +186,35 @@ public class PaymentManagerImplTest {
             fail();
         }
     }
-
+    @org.junit.Test
+    public void testFindPaymentsByAccount(){
+        
+        PaymentManager paymentManager = new PaymentManagerImpl(dataSource);
+        Account account1 = newAccount("Franta","Vizl", new BigDecimal("0"), "800/0100",false);
+        Account account2 = newAccount("Franta","Vizl", new BigDecimal("0"), "800/0100",false);
+        managerAcc.createAccount(account1);
+        managerAcc.createAccount(account2);
+        
+        Payment p0 = new Payment(new BigDecimal("5.000"), LocalDate.now(), "platba 1", false, account1, account2);
+        Payment p1 = new Payment(new BigDecimal("5.000"), LocalDate.now(), "platba 2", false, account2, account1);
+        Payment p2 = new Payment(new BigDecimal("5.000"), LocalDate.now(), "platba 3", false, account1, account2);
+        Payment p3 = new Payment(new BigDecimal("5.000"), LocalDate.now(), "platba 4", false, account2, account1);
+        Payment p4 = new Payment(new BigDecimal("5.000"), LocalDate.now(), "platba 5", false, account1, account2);
+       
+        try {
+            paymentManager.createPayment(p0);
+            paymentManager.createPayment(p1);
+            paymentManager.createPayment(p2);
+            paymentManager.createPayment(p3);
+            paymentManager.createPayment(p4);
+        } catch (IllegalArgumentException ex){
+            // good
+        } catch (Exception ex) {
+            fail();
+        }
+        
+        
+    }
     @org.junit.Test
     public void testFindPayment() throws Exception {
         PaymentManager paymentManager = new PaymentManagerImpl(dataSource);

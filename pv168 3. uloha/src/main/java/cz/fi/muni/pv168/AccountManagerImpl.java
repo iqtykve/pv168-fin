@@ -22,6 +22,7 @@ public class AccountManagerImpl implements AccountManager {
         this.dataSource = dataSource;
     }
 
+
     private void validate(Account account) throws IllegalArgumentException {
         if(account == null) {
             throw new IllegalArgumentException("account should not be null");
@@ -130,7 +131,6 @@ public class AccountManagerImpl implements AccountManager {
 
     @Override
     public Account findAccount(int id){
-        System.out.println("ahoj");
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement st = connection.prepareStatement(
@@ -148,10 +148,51 @@ public class AccountManagerImpl implements AccountManager {
 
         } catch (SQLException ex) {
             throw new ServiceFailureException(
-                    "Error while find account", ex);
+                    "Error while find account by id", ex);
         }
     }
+    
+    public List<Account> findAccountByName(String name){
+        try (
+                Connection connection = dataSource.getConnection();
+                PreparedStatement st = connection.prepareStatement(
+                        "SELECT * FROM accounts WHERE birthName = ? OR givenName = ?")) {
+            st.setString(1, name);
+            st.setString(2, name);
+            ResultSet rs = st.executeQuery();
 
+            List<Account> result = new ArrayList<>();
+            while (rs.next()) {
+                result.add(resultSetToAccount(rs));
+            }
+            return result;
+
+        } catch (SQLException ex) {
+            throw new ServiceFailureException(
+                    "Error when retrieving all accounts", ex);
+        }
+    }
+    
+    public List<Account> findAccountByNameActive(String name){
+        try (
+                Connection connection = dataSource.getConnection();
+                PreparedStatement st = connection.prepareStatement(
+                        "SELECT * FROM accounts WHERE (birthName = ? OR givenName = ?) AND wasDeleted = false")) {
+            st.setString(1, name);
+            st.setString(2, name);
+            ResultSet rs = st.executeQuery();
+
+            List<Account> result = new ArrayList<>();
+            while (rs.next()) {
+                result.add(resultSetToAccount(rs));
+            }
+            return result;
+
+        } catch (SQLException ex) {
+            throw new ServiceFailureException(
+                    "Error when retrieving all accounts", ex);
+        }
+    }
 
     @Override
     public List<Account> findAllAccount() throws ServiceFailureException{
